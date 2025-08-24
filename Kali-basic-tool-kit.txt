@@ -1,0 +1,154 @@
+First, congratulations on taking the initiative to learn ethical hacking on your own—it's a valuable skill for cybersecurity, but always remember to use it responsibly and legally. Ethical hacking means getting explicit permission before testing any system (e.g., your own lab setup or free platforms like HackTheBox or TryHackMe). Never target real systems without authorization, as that could lead to legal issues. Since you have zero budget, focus on free resources: Kali Linux is free, and you can learn from YouTube channels (e.g., NetworkChuck, Hak5, LiveOverflow), free tiers of online labs (TryHackMe, HackTheBox Academy), and official Kali docs.
+
+### Getting Started with Kali Linux
+Kali Linux is a free Debian-based OS designed for penetration testing (pentesting), with hundreds of tools pre-installed. To install it:
+- Download the ISO from the official site (kali.org/get-kali) – choose the free installer image.
+- Run it in a virtual machine for safety (use free VirtualBox from oracle.com/virtualbox or VMware Player).
+- Boot from live USB if you don't want to install (use Rufus to create a bootable USB).
+- Update tools after install: Open terminal and run `sudo apt update && sudo apt upgrade`.
+
+Pentesting follows stages (recon, scanning, gaining access, maintaining access, covering tracks, reporting). Kali tools cover these. Below, I'll cover main categories of pre-installed tools, with brief descriptions, key tools (5-10 per category, focusing on popular ones for beginners), what they do, and basic usage examples. These are default in Kali 2025+ versions. Start practicing in a safe VM lab (e.g., set up Metasploitable as a vulnerable target VM).
+
+I'll use tables for clarity. For deeper learning, search "tool name tutorial" on YouTube or kali.org/docs.
+
+| Category | Description |
+|----------|-------------|
+| Information Gathering | Tools to collect data about targets (e.g., networks, hosts, people) without direct interaction—first step in pentesting to map the attack surface. |
+
+| Tool | What It Does | Basic Usage Example |
+|------|--------------|---------------------|
+| Nmap | Scans networks to discover hosts, open ports, services, OS versions, and vulnerabilities. | `sudo nmap -sV -O target_ip` (scans services and OS).  |
+| Maltego | Visual tool for open-source intelligence (OSINT), linking data like emails, domains, and people. | Run `maltego`, create a graph, add entities (e.g., domain), and run transforms. |
+| Recon-ng | Framework for web reconnaissance, gathering subdomains, emails, and contacts. | `recon-ng`, then `marketplace install all`, use modules like `recon/domains-hosts/brute_hosts`. |
+| theHarvester | Collects emails, subdomains, hosts, and employee names from public sources. | `theharvester -d domain.com -b google` (searches Google for domain info). |
+| Shodan | Searches for internet-connected devices (IoT, servers) and their vulnerabilities. | `shodan search "port:80 os:linux"` (finds Linux web servers). |
+| Dmitry | Gathers subdomains, emails, and port scans from one tool. | `dmitry -s domain.com` (subdomain search). |
+| Metagoofil | Extracts metadata from public documents (PDFs, docs) for OSINT. | `metagoofil -d domain.com -t pdf` (searches for PDFs). |
+
+| Category | Description |
+|----------|-------------|
+| Vulnerability Analysis | Tools to scan for weaknesses in systems, networks, or apps before exploitation. |
+
+| Tool | What It Does | Basic Usage Example |
+|------|--------------|---------------------|
+| OpenVAS | Full vulnerability scanner for networks, detects thousands of CVEs. | Run `openvas-start`, access web UI at localhost:9392, create a scan task.  |
+| Nikto | Scans web servers for misconfigurations, outdated software, and dangerous files. | `nikto -h http://target.com` (basic web scan).  |
+| Lynis | Audits system security and hardening on Unix/Linux. | `sudo lynis audit system` (runs local scan). |
+| Nessus (via plugin) | Advanced vulnerability scanner (community edition pre-configured). | Start with `nessusd -D`, access UI at https://localhost:8834. |
+| Vulmap | Scans for specific vulnerabilities in web apps and services. | `vulmap -u http://target.com` (URL scan). |
+| ssh-audit | Checks SSH servers for weak configs and vulnerabilities. | `ssh-audit target_ip`. |
+| Oscanner | Scans Oracle databases for issues. | `oscanner -s target_ip` (basic scan). |
+
+| Category | Description |
+|----------|-------------|
+| Wireless Attacks | Tools for testing Wi-Fi security, cracking encryption, and de-auth attacks. |
+
+| Tool | What It Does | Basic Usage Example |
+|------|--------------|---------------------|
+| Aircrack-ng | Suite for monitoring, attacking, and cracking Wi-Fi (WEP/WPA). | `airodump-ng wlan0` (scans networks), then `aircrack-ng capture.cap` (cracks).  |
+| Wifite | Automates wireless audits, de-auth, and cracking. | `sudo wifite` (starts scanning).  |
+| Reaver | Attacks WPS-enabled routers to recover PINs. | `reaver -i wlan0mon -b BSSID -vv` (targets AP). |
+| Fern Wifi Cracker | GUI for wireless cracking and attacks. | Run `fern-wifi-cracker`, select interface, scan.  |
+| mdk4 | Performs de-auth and DoS on wireless networks. | `mdk4 wlan0mon d` (de-auth attack). |
+| Kismet | Wireless sniffer and intrusion detection. | `kismet` (starts monitoring). |
+
+| Category | Description |
+|----------|-------------|
+| Web Applications | Tools to test web apps for vulnerabilities like SQL injection, XSS. |
+
+| Tool | What It Does | Basic Usage Example |
+|------|--------------|---------------------|
+| Burp Suite | Proxy for intercepting and modifying web traffic, scanning for vulns. | Run `burpsuite`, set browser proxy to 127.0.0.1:8080.  |
+| sqlmap | Automates SQL injection detection and exploitation. | `sqlmap -u http://target.com?id=1 --dbs` (dumps databases).  |
+| WPScan | Scans WordPress sites for vulns, users, plugins. | `wpscan --url http://target.com` (basic scan). |
+| Skipfish | Fast web app security scanner for recon. | `skipfish -o output http://target.com`.  |
+| DirBuster | Brute-forces directories and files on web servers. | Run GUI, set target URL and wordlist. |
+| Nikto | (Also here) Web server vuln scanner. | See above. |
+| OWASP ZAP | Automated web app scanner with proxy. | Run `zap`, set proxy, spider the site. |
+| Arachni | High-performance web vuln scanner. | `arachni http://target.com`. |
+
+| Category | Description |
+|----------|-------------|
+| Exploitation Tools | Frameworks to exploit discovered vulns and gain access. |
+
+| Tool | What It Does | Basic Usage Example |
+|------|--------------|---------------------|
+| Metasploit Framework | Develops/exploits code against remote targets. | `msfconsole`, `search eternalblue`, `use exploit/...`, set options, `exploit`.  |
+| BeEF | Exploits browser vulns for client-side attacks. | `beef-xss`, hook browser with JS, control from UI.  |
+| sqlmap | (Also here) Exploits SQL injections. | See above. |
+| Armitage | GUI for Metasploit collaboration. | Run `armitage`, connect to msf. |
+| Social-Engineer Toolkit (SET) | For social engineering attacks like phishing. | `setoolkit`, choose attack vector.  |
+
+| Category | Description |
+|----------|-------------|
+| Sniffing & Spoofing | Capture/analyze traffic, perform MITM attacks. |
+
+| Tool | What It Does | Basic Usage Example |
+|------|--------------|---------------------|
+| Wireshark | Analyzes network packets in real-time. | Run `wireshark`, select interface, capture/filter traffic.  |
+| Bettercap | Modern MITM for networks, Wi-Fi, BLE. | `bettercap -iface eth0` (starts UI).  |
+| Ettercap | MITM with ARP spoofing. | `ettercap -G` (GUI mode). |
+| tcpdump | Command-line packet sniffer. | `sudo tcpdump -i eth0` (captures on interface). |
+| SSLstrip | Strips HTTPS to HTTP for MITM. | Integrate with Bettercap or Ettercap. |
+
+| Category | Description |
+|----------|-------------|
+| Password Attacks | Crack or brute-force passwords/hashes. |
+
+| Tool | What It Does | Basic Usage Example |
+|------|--------------|---------------------|
+| John the Ripper | Cracks passwords using dictionary/brute-force. | `john hashes.txt` (cracks file).  |
+| Hashcat | GPU-accelerated hash cracker. | `hashcat -m 0 -a 0 hashes.txt wordlist.txt` (MD5 dict attack). |
+| Hydra | Brute-forces logins (SSH, HTTP). | `hydra -l user -P wordlist.txt ssh://target_ip`. |
+| Crunch | Generates custom wordlists. | `crunch 6 8 abc123 -o list.txt` (creates list). |
+| Ophcrack | Rainbow table-based cracker for Windows hashes. | Load tables, add hashes via GUI. |
+
+| Category | Description |
+|----------|-------------|
+| Maintaining Access | Tools for backdoors and persistence after exploitation. |
+
+| Tool | What It Does | Basic Usage Example |
+|------|--------------|---------------------|
+| Weevely | Creates/manages web shells for post-exploit. | `weevely generate password /path/shell.php` (creates shell). |
+| Empire | Post-exploitation framework for agents. | `empire --rest`, create listener/agent. |
+| Netcat | Creates backdoors/connections. | `nc -lvp 4444` (listen), connect from target. |
+| Powersploit | PowerShell post-exploit modules. | Load in Metasploit or manually. |
+
+| Category | Description |
+|----------|-------------|
+| Reverse Engineering | Analyze binaries, malware, firmware. |
+
+| Tool | What It Does | Basic Usage Example |
+|------|--------------|---------------------|
+| Ghidra | NSA's free reverse engineering suite. | Run `ghidra`, import binary, analyze. |
+| Binwalk | Extracts embedded files from firmware. | `binwalk firmware.bin`. |
+| Radare2 | Framework for disassembling/debugging. | `r2 binary` (opens shell). |
+| apktool | Reverses Android APKs. | `apktool d app.apk`. |
+
+| Category | Description |
+|----------|-------------|
+| Stress Testing | Test system resilience with DoS or load. (Use ethically only on your own systems.) |
+
+| Tool | What It Does | Basic Usage Example |
+|------|--------------|---------------------|
+| SlowHTTPTest | Slow DoS on web servers. | `slowhttptest -c 500 -H -u http://target.com`.  |
+| hping3 | Crafts/floods packets for testing. | `hping3 --flood target_ip`. |
+| THC-SSL-DOS | SSL-based DoS. | `thc-ssl-dos target_ip 443`. |
+
+| Category | Description |
+|----------|-------------|
+| Reporting Tools | Document findings for reports. |
+
+| Tool | What It Does | Basic Usage Example |
+|------|--------------|---------------------|
+| Dradis | Collaborative reporting platform. | Run `dradis`, access web UI. |
+| Faraday | Manages pentest data. | Integrate with other tools. |
+
+### Next Steps for Learning
+- Practice phases: Start with recon (Nmap), scan vulns (OpenVAS), exploit (Metasploit), crack passwords (John).
+- Build a lab: Use 2 VMs—one Kali, one vulnerable (download Metasploitable).
+- Free challenges: TryHackMe rooms (free basics), CTF on OverTheWire.
+- Books: "Hacking: The Art of Exploitation" (free PDF online), Kali docs.
+- Communities: Reddit r/netsec, Kali forums.
+
+This covers the core—ethical hacking is vast, so learn one category at a time. If you have questions on a specific tool, ask! Stay ethical.
